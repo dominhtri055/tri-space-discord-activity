@@ -350,3 +350,58 @@ footer {
   .volume { display: none; }
   footer { flex-direction: column; }
 }
+
+
+.music-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.danger-ghost {
+  color: #fca5a5;
+}
+
+.danger-ghost:hover {
+  color: #fff;
+  background: rgba(239, 68, 68, .14);
+  border-color: rgba(239, 68, 68, .28);
+}
+
+.playlist-item {
+  padding: 0;
+}
+
+.playlist-select {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 10px 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.remove-track {
+  width: 34px;
+  height: 34px;
+  margin-right: 5px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(236,237,248,.42);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.remove-track:hover {
+  color: #fecaca;
+  background: rgba(239, 68, 68, .12);
+  border-color: rgba(239, 68, 68, .2);
+}

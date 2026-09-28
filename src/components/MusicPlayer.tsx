@@ -114,6 +114,45 @@ export default function MusicPlayer() {
     setCurrent((i) => (i - 1 + tracks.length) % tracks.length);
   }
 
+  function removeTrack(index: number) {
+    const removed = tracks[index];
+    if (!removed) return;
+
+    const wasCurrent = index === current;
+    if (wasCurrent && audioRef.current) {
+      audioRef.current.pause();
+      setPlaying(false);
+      setTime(0);
+      setDuration(0);
+    }
+
+    URL.revokeObjectURL(removed.url);
+
+    const nextTracks = tracks.filter((_, i) => i !== index);
+    setTracks(nextTracks);
+
+    if (nextTracks.length === 0) {
+      setCurrent(0);
+      return;
+    }
+
+    if (index < current) {
+      setCurrent((i) => Math.max(0, i - 1));
+    } else if (wasCurrent) {
+      setCurrent(Math.min(index, nextTracks.length - 1));
+    }
+  }
+
+  function clearPlaylist() {
+    if (audioRef.current) audioRef.current.pause();
+    tracks.forEach((item) => URL.revokeObjectURL(item.url));
+    setTracks([]);
+    setCurrent(0);
+    setPlaying(false);
+    setTime(0);
+    setDuration(0);
+  }
+
   return (
     <section
       className={`music-card glass ${dragging ? "drop-active" : ""}`}
@@ -126,9 +165,16 @@ export default function MusicPlayer() {
     >
       <div className="music-topline">
         <span className="eyebrow">NOW PLAYING</span>
-        <button className="ghost-button" onClick={() => fileRef.current?.click()}>
-          + Add music
-        </button>
+        <div className="music-actions">
+          {tracks.length > 0 && (
+            <button className="ghost-button danger-ghost" onClick={clearPlaylist}>
+              Clear all
+            </button>
+          )}
+          <button className="ghost-button" onClick={() => fileRef.current?.click()}>
+            + Add music
+          </button>
+        </div>
         <input
           ref={fileRef}
           hidden
@@ -210,17 +256,26 @@ export default function MusicPlayer() {
       {tracks.length > 0 && (
         <div className="playlist">
           {tracks.map((item, index) => (
-            <button
+            <div
               key={item.id}
               className={index === current ? "playlist-item active" : "playlist-item"}
-              onClick={() => setCurrent(index)}
             >
-              <span className="track-number">{index === current && playing ? "♪" : index + 1}</span>
-              <span className="playlist-text">
-                <strong>{item.name}</strong>
-                <small>{item.artist}</small>
-              </span>
-            </button>
+              <button className="playlist-select" onClick={() => setCurrent(index)}>
+                <span className="track-number">{index === current && playing ? "♪" : index + 1}</span>
+                <span className="playlist-text">
+                  <strong>{item.name}</strong>
+                  <small>{item.artist}</small>
+                </span>
+              </button>
+              <button
+                className="remove-track"
+                onClick={() => removeTrack(index)}
+                aria-label={`Remove ${item.name}`}
+                title="Remove track"
+              >
+                ×
+              </button>
+            </div>
           ))}
         </div>
       )}
